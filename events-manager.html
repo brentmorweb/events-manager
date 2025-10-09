@@ -25,6 +25,8 @@
     .search-box { position: relative; }
     .search-box input { padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 280px; }
     .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096; }
+    .quick-filters { display: flex; gap: 12px; align-items: center; }
+    .quick-filters select { width: 160px; }
     .events-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: none; }
     .events-table.active { display: block; }
     table { width: 100%; border-collapse: collapse; }
@@ -142,44 +144,12 @@
     .alert-box { padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid; }
     .alert-warning { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
     .alert-success { background: #ecfdf5; border-color: #10b981; color: #065f46; }
-    .filter-panel { display: none; background: white; border-radius: 12px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); margin-bottom: 24px; padding: 24px; border: 1px solid #e2e8f0; }
-    .filter-panel.active { display: block; animation: fadeIn 0.2s ease; }
-    .filter-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
-    .filter-header h3 { font-size: 20px; margin-bottom: 6px; color: #1a202c; }
-    .filter-header p { color: #718096; font-size: 14px; }
-    .filter-content { display: grid; gap: 20px; }
-    .filter-section h4 { font-size: 15px; margin-bottom: 12px; color: #1a202c; }
-    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 13px; color: #1a202c; cursor: pointer; transition: all 0.2s ease; }
-    .chip input { display: none; }
-    .chip span { pointer-events: none; }
-    .chip.active { background: #eef2ff; border-color: #4f46e5; color: #4338ca; box-shadow: 0 1px 2px rgba(79, 70, 229, 0.18); }
-    .filter-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    .filter-grid label { font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 6px; display: block; }
-    .filter-grid input[type="date"], .filter-grid input[type="number"], .filter-grid select { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
-    .preset-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-    .preset-form input { flex: 1; min-width: 220px; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; }
-    .preset-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .preset-chip { display: inline-flex; align-items: center; gap: 6px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 999px; padding: 6px 10px 6px 14px; font-size: 13px; color: #1a202c; }
-    .preset-chip button { border: none; background: none; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
-    .preset-chip button.preset-apply { color: #1a202c; font-weight: 600; }
-    .preset-chip button.preset-remove { color: #a0aec0; padding: 0; }
-    .preset-chip button.preset-remove:hover { color: #4a5568; }
-    .filter-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; }
-    .preset-message { font-size: 13px; color: #4f46e5; margin-top: 8px; }
     .active-filters { margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .active-filters .summary-label { font-weight: 600; color: #4a5568; font-size: 14px; }
     .active-filter-chip { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; border-radius: 999px; padding: 6px 12px; font-size: 13px; color: #4338ca; }
     .active-filter-chip button { border: none; background: none; cursor: pointer; color: #4338ca; padding: 0; font-size: 12px; }
     .active-filters .clear-all { margin-left: auto; }
-    .empty-presets, .empty-filters { color: #a0aec0; font-size: 13px; }
-    @media (max-width: 768px) {
-      .filter-panel { padding: 20px; }
-      .filter-header { flex-direction: column; align-items: flex-start; }
-      .filter-footer { flex-direction: column; align-items: stretch; }
-      .filter-footer .btn { width: 100%; justify-content: center; }
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .empty-filters { color: #a0aec0; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -193,16 +163,6 @@
     <!-- View Controls -->
     <div class="view-controls">
       <div class="left-controls">
-        <button id="filterToggleButton" class="btn" onclick="toggleFilter()" aria-label="Open filter menu" aria-expanded="false">
-          <i class="fas fa-filter"></i> Filter
-        </button>
-        <select id="statusFilter" aria-label="Filter by status">
-          <option>All Events</option>
-          <option>Published</option>
-          <option>Scheduled</option>
-          <option>Draft</option>
-          <option>Completed</option>
-        </select>
         <div class="view-toggle" role="tablist" aria-label="Toggle view">
           <button id="listToggle" class="active" onclick="switchView('list', this)" role="tab" aria-selected="true">
             <i class="fas fa-list"></i> List
@@ -217,6 +177,23 @@
           <i class="fas fa-search"></i>
           <input type="text" placeholder="Search events..." aria-label="Search events" />
         </div>
+        <div class="quick-filters" aria-label="Quick filters">
+          <select id="statusQuickFilter" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="Published">Published</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Draft">Draft</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <select id="typeQuickFilter" aria-label="Filter by type">
+            <option value="">All Types</option>
+            <option value="Conference">Conference</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Training">Training</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Seminar">Seminar</option>
+          </select>
+        </div>
         <button class="btn btn-primary" onclick="openCreateModal()">
           <i class="fas fa-plus"></i> Create Event
         </button>
@@ -224,133 +201,6 @@
   </div>
 
     <div id="activeFiltersSummary" class="active-filters" aria-live="polite"></div>
-
-    <div id="filterPanel" class="filter-panel" aria-hidden="true" role="dialog" aria-label="Advanced filters" tabindex="-1">
-      <div class="filter-header">
-        <div>
-          <h3>Advanced Filtering System</h3>
-          <p>Combine multiple filters to pinpoint the exact events you need. Save frequently used configurations as presets for rapid reuse.</p>
-        </div>
-        <button class="icon-btn" onclick="closeFilterPanel()" aria-label="Close filters">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="filter-content">
-        <div class="filter-section">
-          <h4>Status</h4>
-          <div class="chip-group">
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="status" value="Published" />
-              <span>Published</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="status" value="Scheduled" />
-              <span>Scheduled</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="status" value="Draft" />
-              <span>Draft</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="status" value="Completed" />
-              <span>Completed</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Event Type</h4>
-          <div class="chip-group">
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="types" value="Conference" />
-              <span>Conference</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="types" value="Seminar" />
-              <span>Seminar</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="types" value="Training" />
-              <span>Training</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="types" value="Workshop" />
-              <span>Workshop</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="types" value="Webinar" />
-              <span>Webinar</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Date Range</h4>
-          <div class="filter-grid">
-            <div>
-              <label for="filterStartDate">Start date</label>
-              <input type="date" id="filterStartDate" />
-            </div>
-            <div>
-              <label for="filterEndDate">End date</label>
-              <input type="date" id="filterEndDate" />
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Price Range (gross)</h4>
-          <div class="filter-grid">
-            <div>
-              <label for="priceMin">Minimum</label>
-              <input type="number" id="priceMin" min="0" placeholder="0" />
-            </div>
-            <div>
-              <label for="priceMax">Maximum</label>
-              <input type="number" id="priceMax" min="0" placeholder="50000" />
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Location Type</h4>
-          <div class="chip-group">
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="locationTypes" value="Physical" />
-              <span>In-Person</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="locationTypes" value="Online" />
-              <span>Online</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" class="filter-checkbox" data-filter-key="locationTypes" value="Hybrid" />
-              <span>Hybrid</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Filter Presets</h4>
-          <div class="preset-form">
-            <input type="text" id="presetName" placeholder="Name this preset..." aria-label="Preset name" />
-            <button class="btn btn-primary" type="button" onclick="saveFilterPreset()">
-              <i class="fas fa-bookmark"></i> Save Preset
-            </button>
-          </div>
-          <div id="presetMessage" class="preset-message" role="status" aria-live="polite"></div>
-          <div id="savedPresets" class="preset-list"></div>
-        </div>
-      </div>
-      <div class="filter-footer">
-        <button class="btn" type="button" onclick="resetFilters()">
-          <i class="fas fa-undo"></i> Clear All
-        </button>
-        <button class="btn btn-primary" type="button" onclick="applyFilters(true)">
-          <i class="fas fa-check"></i> Apply Filters
-        </button>
-      </div>
-    </div>
 
     <!-- List View -->
     <div id="listView" class="events-table active" aria-live="polite">
@@ -1187,13 +1037,8 @@
 
     const activeFilters = {
       status: new Set(),
-      types: new Set(),
-      locationTypes: new Set(),
-      dateRange: { start: null, end: null },
-      priceRange: { min: null, max: null }
+      types: new Set()
     };
-
-    let savedPresets = [];
 
     // State
     let currentStep = 0;
@@ -1512,79 +1357,25 @@
       return 'fas fa-map-marker-alt';
     }
 
-    function applyFilters(closePanel = false) {
-      let results = events.filter(event => {
+    function applyFilters() {
+      const results = events.filter(event => {
         if (activeFilters.status.size && !activeFilters.status.has(event.status)) return false;
         if (activeFilters.types.size && !activeFilters.types.has(event.type)) return false;
-        if (activeFilters.locationTypes.size && !activeFilters.locationTypes.has(event.locationType)) return false;
-
-        const { start, end } = activeFilters.dateRange;
-        if (start) {
-          const startDate = new Date(start);
-          if (new Date(event.date) < startDate) return false;
-        }
-        if (end) {
-          const endDate = new Date(end);
-          if (new Date(event.date) > endDate) return false;
-        }
-
-        const totals = getEventTicketTotals(event);
-        const { min, max } = activeFilters.priceRange;
-        if (min !== null && totals.gross < min) return false;
-        if (max !== null && totals.gross > max) return false;
-
         return true;
       });
 
       filteredEvents = results;
       renderEvents(results);
       updateActiveFiltersSummary();
-
-      if (closePanel) {
-        closeFilterPanel();
-      }
     }
 
-    function toggleFilter() {
-      const panel = document.getElementById('filterPanel');
-      const button = document.getElementById('filterToggleButton');
-      if (!panel || !button) return;
-      const isOpen = !panel.classList.contains('active');
-      if (isOpen) {
-        panel.classList.add('active');
-        panel.setAttribute('aria-hidden', 'false');
-        button.setAttribute('aria-expanded', 'true');
-        panel.focus();
-      } else {
-        closeFilterPanel();
-      }
-    }
-
-    function closeFilterPanel() {
-      const panel = document.getElementById('filterPanel');
-      const button = document.getElementById('filterToggleButton');
-      if (panel) {
-        panel.classList.remove('active');
-        panel.setAttribute('aria-hidden', 'true');
-      }
-      if (button) {
-        button.setAttribute('aria-expanded', 'false');
-        button.focus();
-      }
-    }
-
-    function setupFilterControls() {
-      const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
-      filterCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => handleCheckboxChange(checkbox));
-      });
-
-      const statusSelect = document.getElementById('statusFilter');
+    function setupQuickFilters() {
+      const statusSelect = document.getElementById('statusQuickFilter');
       if (statusSelect) {
         statusSelect.addEventListener('change', (event) => {
           activeFilters.status.clear();
           const value = event.target.value;
-          if (value && value !== 'All Events') {
+          if (value) {
             activeFilters.status.add(value);
           }
           updateFilterControls();
@@ -1592,120 +1383,45 @@
         });
       }
 
-      const startInput = document.getElementById('filterStartDate');
-      if (startInput) {
-        startInput.addEventListener('change', (event) => {
-          activeFilters.dateRange.start = event.target.value || null;
-          applyFilters();
-        });
-      }
-
-      const endInput = document.getElementById('filterEndDate');
-      if (endInput) {
-        endInput.addEventListener('change', (event) => {
-          activeFilters.dateRange.end = event.target.value || null;
-          applyFilters();
-        });
-      }
-
-      const minInput = document.getElementById('priceMin');
-      if (minInput) {
-        minInput.addEventListener('change', (event) => {
+      const typeSelect = document.getElementById('typeQuickFilter');
+      if (typeSelect) {
+        typeSelect.addEventListener('change', (event) => {
+          activeFilters.types.clear();
           const value = event.target.value;
-          activeFilters.priceRange.min = value !== '' ? Number(value) : null;
-          applyFilters();
-        });
-      }
-
-      const maxInput = document.getElementById('priceMax');
-      if (maxInput) {
-        maxInput.addEventListener('change', (event) => {
-          const value = event.target.value;
-          activeFilters.priceRange.max = value !== '' ? Number(value) : null;
-          applyFilters();
-        });
-      }
-
-      const presetInput = document.getElementById('presetName');
-      if (presetInput) {
-        presetInput.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            saveFilterPreset();
+          if (value) {
+            activeFilters.types.add(value);
           }
+          updateFilterControls();
+          applyFilters();
         });
-      }
-    }
-
-    function handleCheckboxChange(checkbox) {
-      const { filterKey } = checkbox.dataset;
-      const value = checkbox.value;
-      const target = activeFilters[filterKey];
-      if (target instanceof Set) {
-        if (checkbox.checked) {
-          target.add(value);
-        } else {
-          target.delete(value);
-        }
-      }
-      updateFilterControls();
-      applyFilters();
-    }
-
-    function updateChipState(input) {
-      const chip = input.closest('.chip');
-      if (chip) {
-        chip.classList.toggle('active', input.checked);
       }
     }
 
     function resetFilters() {
       activeFilters.status.clear();
       activeFilters.types.clear();
-      activeFilters.locationTypes.clear();
-      activeFilters.dateRange = { start: null, end: null };
-      activeFilters.priceRange = { min: null, max: null };
       updateFilterControls();
       applyFilters();
-      displayPresetMessage('All filters cleared. Showing every event again.');
     }
 
     function updateFilterControls() {
-      document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
-        const { filterKey } = checkbox.dataset;
-        const target = activeFilters[filterKey];
-        if (target instanceof Set) {
-          checkbox.checked = target.has(checkbox.value);
-        }
-        updateChipState(checkbox);
-      });
-
-      const startInput = document.getElementById('filterStartDate');
-      if (startInput) {
-        startInput.value = activeFilters.dateRange.start || '';
-      }
-      const endInput = document.getElementById('filterEndDate');
-      if (endInput) {
-        endInput.value = activeFilters.dateRange.end || '';
-      }
-      const minInput = document.getElementById('priceMin');
-      if (minInput) {
-        minInput.value = activeFilters.priceRange.min ?? '';
-      }
-      const maxInput = document.getElementById('priceMax');
-      if (maxInput) {
-        maxInput.value = activeFilters.priceRange.max ?? '';
-      }
-
-      const statusSelect = document.getElementById('statusFilter');
+      const statusSelect = document.getElementById('statusQuickFilter');
       if (statusSelect) {
-        if (!activeFilters.status.size) {
-          statusSelect.value = 'All Events';
-        } else if (activeFilters.status.size === 1) {
+        if (activeFilters.status.size === 1) {
           const [status] = Array.from(activeFilters.status);
           statusSelect.value = status;
         } else {
-          statusSelect.value = 'All Events';
+          statusSelect.value = '';
+        }
+      }
+
+      const typeSelect = document.getElementById('typeQuickFilter');
+      if (typeSelect) {
+        if (activeFilters.types.size === 1) {
+          const [type] = Array.from(activeFilters.types);
+          typeSelect.value = type;
+        } else {
+          typeSelect.value = '';
         }
       }
     }
@@ -1721,38 +1437,11 @@
         groups.push({ key: 'status', label: 'Status', value: Array.from(activeFilters.status).join(', ') });
       }
       if (activeFilters.types.size) {
-        groups.push({ key: 'types', label: 'Type', value: Array.from(activeFilters.types).join(', ') });
-      }
-      if (activeFilters.locationTypes.size) {
-        groups.push({ key: 'locationTypes', label: 'Location', value: Array.from(activeFilters.locationTypes).join(', ') });
-      }
-      if (activeFilters.dateRange.start || activeFilters.dateRange.end) {
-        const { start, end } = activeFilters.dateRange;
-        let label = '';
-        if (start && end) {
-          label = `${formatDate(start)} - ${formatDate(end)}`;
-        } else if (start) {
-          label = `From ${formatDate(start)}`;
-        } else if (end) {
-          label = `Up to ${formatDate(end)}`;
-        }
-        groups.push({ key: 'dateRange', label: 'Date', value: label });
-      }
-      if (activeFilters.priceRange.min !== null || activeFilters.priceRange.max !== null) {
-        const { min, max } = activeFilters.priceRange;
-        let label = '';
-        if (min !== null && max !== null) {
-          label = `${formatCurrency(min)} - ${formatCurrency(max)}`;
-        } else if (min !== null) {
-          label = `From ${formatCurrency(min)}`;
-        } else if (max !== null) {
-          label = `Up to ${formatCurrency(max)}`;
-        }
-        groups.push({ key: 'priceRange', label: 'Price', value: label });
+        groups.push({ key: 'types', label: 'Event Type', value: Array.from(activeFilters.types).join(', ') });
       }
 
       if (!groups.length) {
-        summary.innerHTML = '<span class="empty-filters">No advanced filters applied.</span>';
+        summary.innerHTML = '<span class="empty-filters">No filters applied.</span>';
         return;
       }
 
@@ -1785,109 +1474,11 @@
     }
 
     function clearFilterGroup(groupKey) {
-      if (groupKey === 'status' || groupKey === 'types' || groupKey === 'locationTypes') {
+      if (groupKey === 'status' || groupKey === 'types') {
         activeFilters[groupKey].clear();
-      } else if (groupKey === 'dateRange') {
-        activeFilters.dateRange = { start: null, end: null };
-      } else if (groupKey === 'priceRange') {
-        activeFilters.priceRange = { min: null, max: null };
       }
       updateFilterControls();
       applyFilters();
-    }
-
-    function saveFilterPreset() {
-      const nameInput = document.getElementById('presetName');
-      if (!nameInput) return;
-      const name = nameInput.value.trim();
-      if (!name) {
-        displayPresetMessage('Please provide a name before saving your preset.');
-        return;
-      }
-
-      const snapshot = {
-        status: Array.from(activeFilters.status),
-        types: Array.from(activeFilters.types),
-        locationTypes: Array.from(activeFilters.locationTypes),
-        dateRange: { ...activeFilters.dateRange },
-        priceRange: { ...activeFilters.priceRange }
-      };
-
-      const existingIndex = savedPresets.findIndex(preset => preset.name.toLowerCase() === name.toLowerCase());
-      if (existingIndex >= 0) {
-        savedPresets[existingIndex].filters = snapshot;
-        displayPresetMessage(`Updated the "${name}" preset.`);
-      } else {
-        savedPresets.push({ name, filters: snapshot });
-        displayPresetMessage(`Saved preset "${name}" for quick access.`);
-      }
-      nameInput.value = '';
-      renderSavedPresets();
-    }
-
-    function renderSavedPresets() {
-      const container = document.getElementById('savedPresets');
-      if (!container) return;
-
-      container.innerHTML = '';
-      if (!savedPresets.length) {
-        container.innerHTML = '<span class="empty-presets">No presets saved yet.</span>';
-        return;
-      }
-
-      savedPresets.forEach((preset, index) => {
-        const chip = document.createElement('div');
-        chip.className = 'preset-chip';
-
-        const applyBtn = document.createElement('button');
-        applyBtn.type = 'button';
-        applyBtn.className = 'preset-apply';
-        applyBtn.textContent = preset.name;
-        applyBtn.addEventListener('click', () => applyFilterPreset(index));
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'preset-remove';
-        removeBtn.setAttribute('aria-label', `Delete ${preset.name} preset`);
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        removeBtn.addEventListener('click', () => deleteFilterPreset(index));
-
-        chip.appendChild(applyBtn);
-        chip.appendChild(removeBtn);
-        container.appendChild(chip);
-      });
-    }
-
-    function applyFilterPreset(index) {
-      const preset = savedPresets[index];
-      if (!preset) return;
-      activeFilters.status = new Set(preset.filters.status);
-      activeFilters.types = new Set(preset.filters.types);
-      activeFilters.locationTypes = new Set(preset.filters.locationTypes);
-      activeFilters.dateRange = { ...preset.filters.dateRange };
-      activeFilters.priceRange = { ...preset.filters.priceRange };
-      updateFilterControls();
-      applyFilters();
-      displayPresetMessage(`Applied preset "${preset.name}".`);
-    }
-
-    function deleteFilterPreset(index) {
-      const [removed] = savedPresets.splice(index, 1);
-      renderSavedPresets();
-      if (removed) {
-        displayPresetMessage(`Removed preset "${removed.name}".`);
-      }
-    }
-
-    function displayPresetMessage(message) {
-      const messageEl = document.getElementById('presetMessage');
-      if (!messageEl) return;
-      messageEl.textContent = message;
-      if (message) {
-        setTimeout(() => {
-          messageEl.textContent = '';
-        }, 4000);
-      }
     }
 
     // Generate calendar days
@@ -2116,9 +1707,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       filteredEvents = [...events];
       renderEvents(events);
-      setupFilterControls();
+      setupQuickFilters();
       updateFilterControls();
-      renderSavedPresets();
       updateActiveFiltersSummary();
       generateCalendarDays();
       setupTicketForm();
