@@ -173,7 +173,7 @@
       <div class="right-controls">
         <div class="search-box">
           <i class="fas fa-search"></i>
-          <input type="text" placeholder="Search events..." aria-label="Search events" />
+          <input id="eventSearch" type="text" placeholder="Search events..." aria-label="Search events" />
         </div>
         <div class="quick-filters" aria-label="Quick filters">
           <select id="statusQuickFilter" aria-label="Filter by status">
@@ -976,6 +976,7 @@
     ];
 
     let filteredEvents = [...events];
+    let searchQuery = '';
 
     function getEventCurrency(event) {
       return event && event.currency ? event.currency : 'USD';
@@ -1034,6 +1035,18 @@
       status: new Set(),
       types: new Set()
     };
+
+    function debounce(fn, delay = 200) {
+      let timeoutId;
+      return (...args) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+          fn(...args);
+        }, delay);
+      };
+    }
 
     // State
     let currentStep = 0;
@@ -1353,15 +1366,34 @@
     }
 
     function applyFilters() {
+      const query = searchQuery.trim().toLowerCase();
       const results = events.filter(event => {
         if (activeFilters.status.size && !activeFilters.status.has(event.status)) return false;
         if (activeFilters.types.size && !activeFilters.types.has(event.type)) return false;
+        if (query) {
+          const text = `${event.title} ${event.author}`.toLowerCase();
+          if (!text.includes(query)) return false;
+        }
         return true;
       });
 
       filteredEvents = results;
       renderEvents(results);
       updateActiveFiltersSummary();
+    }
+
+    function setupFilterControls() {
+      const searchInput = document.getElementById('eventSearch');
+      if (!searchInput) return;
+
+      const handleSearchInput = debounce((value) => {
+        searchQuery = value;
+        applyFilters();
+      }, 200);
+
+      searchInput.addEventListener('input', (event) => {
+        handleSearchInput(event.target.value.trim().toLowerCase());
+      });
     }
 
     function setupQuickFilters() {
@@ -1710,6 +1742,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       filteredEvents = [...events];
       renderEvents(events);
+      setupFilterControls();
       setupQuickFilters();
       updateFilterControls();
       updateActiveFiltersSummary();
