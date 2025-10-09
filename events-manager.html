@@ -81,8 +81,8 @@
     .form-section { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
     .section-header { padding: 16px; background: #f7fafc; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
     .section-header:hover { background: #edf2f7; }
-    .section-content { padding: 24px; display: none; }
-    .section-content.expanded { display: block; }
+    .section-content { padding: 24px; display: none; background: #ffffff; border-top: 1px solid #e2e8f0; }
+    .section-content.expanded { display: block; box-shadow: inset 0 1px 0 rgba(79, 70, 229, 0.08); }
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #1a202c; }
     .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
@@ -561,7 +561,7 @@
               <span><i class="fas fa-heading"></i> Title & Short Description</span>
               <span><i class="fas fa-chevron-down"></i></span>
             </div>
-            <div class="section-content" id="section-title">
+            <div class="section-content expanded" id="section-title" data-required="true">
               <div class="form-group">
                 <label>Event Title</label>
                 <input type="text" placeholder="Enter event title..." />
@@ -581,7 +581,7 @@
               <span><i class="fas fa-tag"></i> Type, Category and Tags</span>
               <span><i class="fas fa-chevron-down"></i></span>
             </div>
-            <div class="section-content" id="section-type">
+            <div class="section-content expanded" id="section-type" data-required="true">
               <div class="form-row">
                 <div class="form-group">
                   <label>Event Type</label>
@@ -624,7 +624,7 @@
               <span><i class="fas fa-ticket-alt"></i> Ticket Types & Pricing</span>
               <span><i class="fas fa-chevron-down"></i></span>
             </div>
-            <div class="section-content expanded" id="section-tickets">
+            <div class="section-content expanded" id="section-tickets" data-required="true">
               <div class="ticket-form-grid">
                 <div class="form-group">
                   <label for="ticketName">Ticket name</label>
@@ -668,7 +668,7 @@
               <span><i class="fas fa-calendar-alt"></i> Date, Time & Location</span>
               <span><i class="fas fa-chevron-down"></i></span>
             </div>
-            <div class="section-content" id="section-datetime">
+            <div class="section-content expanded" id="section-datetime" data-required="true">
               <div class="form-group">
                 <label>Event Schedule</label>
                 <div class="radio-group">
@@ -725,7 +725,7 @@
               <span><i class="fas fa-file-alt"></i> Details & Contents</span>
               <span><i class="fas fa-chevron-down"></i></span>
             </div>
-            <div class="section-content" id="section-details">
+            <div class="section-content expanded" id="section-details" data-required="true">
               <div class="form-group">
                 <label>Event Description</label>
                 <textarea style="min-height: 200px;" placeholder="Provide detailed information about your event..."></textarea>
@@ -1685,9 +1685,17 @@
     // Collapsible sections
     function toggleSection(sectionId) {
       const content = document.getElementById('section-' + sectionId);
-      if (content) {
-        content.classList.toggle('expanded');
+      if (!content) {
+        return;
       }
+
+      const isRequired = content.dataset.required === 'true';
+      if (isRequired) {
+        content.classList.add('expanded');
+        return;
+      }
+
+      content.classList.toggle('expanded');
     }
 
     // Event dashboard open/close
