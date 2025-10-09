@@ -95,6 +95,27 @@
     .tag { background: #eef2ff; color: #4f46e5; padding: 4px 12px; border-radius: 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
     .tag button { background: none; border: none; color: #4f46e5; cursor: pointer; padding: 0; line-height: 1; font-size: 14px; }
     .tag-input input { border: none; outline: none; flex: 1; min-width: 100px; }
+    .ticket-breakdown { margin-top: 12px; display: grid; gap: 8px; }
+    .ticket-breakdown.empty { color: #a0aec0; font-size: 13px; }
+    .ticket-pill { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #1a202c; }
+    .ticket-pill strong { font-size: 14px; color: #1a202c; }
+    .ticket-pill .ticket-meta { display: flex; gap: 12px; color: #4a5568; font-weight: 500; }
+    .ticket-pill .ticket-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .ticket-pill .ticket-meta i { color: #718096; }
+    .ticket-form-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 16px; }
+    .ticket-form-grid .form-group { margin-bottom: 0; }
+    .ticket-description-group textarea { min-height: 80px; }
+    .ticket-message { font-size: 13px; margin-top: 8px; color: #4f46e5; }
+    .ticket-message.error { color: #dc2626; }
+    .ticket-list { margin-top: 16px; display: grid; gap: 12px; }
+    .ticket-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: white; display: grid; gap: 8px; }
+    .ticket-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .ticket-card-header h4 { font-size: 16px; color: #1a202c; }
+    .ticket-card-meta { display: flex; flex-wrap: wrap; gap: 12px; color: #4a5568; font-size: 13px; }
+    .ticket-card-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .ticket-card-actions { text-align: right; }
+    .ticket-card-actions .btn { padding: 6px 12px; font-size: 13px; }
+    .ticket-card-empty { color: #a0aec0; font-size: 13px; }
     .event-dashboard { display: none; }
     .event-dashboard.active { display: block; }
     .dashboard-header { background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
@@ -749,6 +770,50 @@
           </div>
 
           <div class="form-section">
+            <div class="section-header" onclick="toggleSection('tickets')">
+              <span><i class="fas fa-ticket-alt"></i> Ticket Types & Pricing</span>
+              <span><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="section-content expanded" id="section-tickets">
+              <div class="ticket-form-grid">
+                <div class="form-group">
+                  <label for="ticketName">Ticket name</label>
+                  <input id="ticketName" type="text" placeholder="e.g. VIP, Early Bird" />
+                </div>
+                <div class="form-group">
+                  <label for="ticketPrice">Price</label>
+                  <input id="ticketPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                <div class="form-group">
+                  <label for="ticketInventory">Inventory</label>
+                  <input id="ticketInventory" type="number" min="0" step="1" placeholder="100" />
+                </div>
+                <div class="form-group">
+                  <label for="ticketLimit">Per-order limit</label>
+                  <input id="ticketLimit" type="number" min="0" step="1" placeholder="Optional" />
+                </div>
+                <div class="form-group">
+                  <label for="ticketStart">Sales start</label>
+                  <input id="ticketStart" type="datetime-local" />
+                </div>
+                <div class="form-group">
+                  <label for="ticketEnd">Sales end</label>
+                  <input id="ticketEnd" type="datetime-local" />
+                </div>
+              </div>
+              <div class="form-group ticket-description-group">
+                <label for="ticketDescription">Description</label>
+                <textarea id="ticketDescription" placeholder="Highlight what's included with this ticket..."></textarea>
+              </div>
+              <button id="addTicketButton" class="btn btn-primary" type="button">
+                <i class="fas fa-plus"></i> Add Ticket Type
+              </button>
+              <div id="ticketMessage" class="ticket-message" role="status" aria-live="polite"></div>
+              <div id="ticketList" class="ticket-list"></div>
+            </div>
+          </div>
+
+          <div class="form-section">
             <div class="section-header" onclick="toggleSection('datetime')">
               <span><i class="fas fa-calendar-alt"></i> Date, Time & Location</span>
               <span><i class="fas fa-chevron-down"></i></span>
@@ -949,13 +1014,45 @@
         time: '09:00',
         location: 'Convention Center, NYC',
         locationType: 'Physical',
-        ticketsSold: 450,
-        capacity: 500,
-        gross: 45000,
         views: 2340,
         status: 'Published',
         type: 'Conference',
-        price: 299
+        currency: 'USD',
+        tickets: [
+          {
+            id: 'vip',
+            name: 'VIP Pass',
+            price: 499,
+            inventory: 150,
+            sold: 140,
+            perOrderLimit: 4,
+            description: 'Front row seating, lounge access and speaker meet & greet.',
+            start: '2025-07-01T09:00',
+            end: '2025-11-14T23:59'
+          },
+          {
+            id: 'general',
+            name: 'General Admission',
+            price: 249,
+            inventory: 300,
+            sold: 260,
+            perOrderLimit: 10,
+            description: 'Full access to all sessions and expo floor.',
+            start: '2025-07-01T09:00',
+            end: '2025-11-14T23:59'
+          },
+          {
+            id: 'student',
+            name: 'Student Pass',
+            price: 149,
+            inventory: 100,
+            sold: 50,
+            perOrderLimit: 1,
+            description: 'Discounted access for currently enrolled students.',
+            start: '2025-08-15T09:00',
+            end: '2025-11-10T23:59'
+          }
+        ]
       },
       {
         id: 2,
@@ -965,13 +1062,34 @@
         time: '14:00',
         location: 'Online',
         locationType: 'Online',
-        ticketsSold: 120,
-        capacity: 200,
-        gross: 0,
         views: 890,
         status: 'Scheduled',
         type: 'Seminar',
-        price: 0
+        currency: 'USD',
+        tickets: [
+          {
+            id: 'free',
+            name: 'Livestream Access',
+            price: 0,
+            inventory: 1000,
+            sold: 450,
+            perOrderLimit: 1,
+            description: 'Includes live Q&A and recording replay.',
+            start: '2025-08-01T09:00',
+            end: '2025-10-20T13:00'
+          },
+          {
+            id: 'vip',
+            name: 'VIP Q&A Seat',
+            price: 79,
+            inventory: 100,
+            sold: 70,
+            perOrderLimit: 2,
+            description: 'Priority questions during Q&A and exclusive slides.',
+            start: '2025-08-15T09:00',
+            end: '2025-10-19T23:59'
+          }
+        ]
       },
       {
         id: 3,
@@ -981,17 +1099,91 @@
         time: '10:00',
         location: 'Corporate HQ, Building A',
         locationType: 'Physical',
-        ticketsSold: 35,
-        capacity: 40,
-        gross: 8750,
         views: 456,
         status: 'Published',
         type: 'Training',
-        price: 250
+        currency: 'USD',
+        tickets: [
+          {
+            id: 'executive',
+            name: 'Executive Intensive',
+            price: 599,
+            inventory: 20,
+            sold: 18,
+            perOrderLimit: 2,
+            description: 'Includes private coaching session and catered lunch.',
+            start: '2025-06-15T08:00',
+            end: '2025-10-05T23:59'
+          },
+          {
+            id: 'standard',
+            name: 'Standard Workshop',
+            price: 349,
+            inventory: 40,
+            sold: 32,
+            perOrderLimit: 5,
+            description: 'Hands-on sessions, materials and group coaching.',
+            start: '2025-06-15T08:00',
+            end: '2025-10-10T23:59'
+          }
+        ]
       }
     ];
 
     let filteredEvents = [...events];
+
+    function getEventCurrency(event) {
+      return event && event.currency ? event.currency : 'USD';
+    }
+
+    function getEventTicketTotals(event) {
+      if (!event || !Array.isArray(event.tickets)) {
+        return { sold: 0, inventory: 0, gross: 0, hasPaidTicket: false };
+      }
+      return event.tickets.reduce(
+        (totals, ticket) => {
+          const sold = Number(ticket.sold) || 0;
+          const inventory = Number(ticket.inventory) || 0;
+          const price = Number(ticket.price) || 0;
+          totals.sold += sold;
+          totals.inventory += inventory;
+          totals.gross += sold * price;
+          if (price > 0) {
+            totals.hasPaidTicket = true;
+          }
+          return totals;
+        },
+        { sold: 0, inventory: 0, gross: 0, hasPaidTicket: false }
+      );
+    }
+
+    function renderTicketSummary(event) {
+      if (!event || !Array.isArray(event.tickets) || !event.tickets.length) {
+        return '<div class="ticket-breakdown empty">No ticket types configured yet.</div>';
+      }
+
+      const currency = getEventCurrency(event);
+      const items = event.tickets
+        .map(ticket => {
+          const priceLabel = Number(ticket.price) === 0
+            ? 'Free'
+            : formatCurrency(Number(ticket.price), currency);
+          const sold = Number(ticket.sold) || 0;
+          const inventory = Number(ticket.inventory) || 0;
+          return `
+            <div class="ticket-pill">
+              <strong>${ticket.name}</strong>
+              <div class="ticket-meta">
+                <span><i class="fas fa-tag"></i> ${priceLabel}</span>
+                <span><i class="fas fa-users"></i> ${sold.toLocaleString()} / ${inventory.toLocaleString()}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      return `<div class="ticket-breakdown">${items}</div>`;
+    }
 
     const activeFilters = {
       status: new Set(),
@@ -1006,6 +1198,9 @@
     // State
     let currentStep = 0;
     let createMethod = null;
+    let currentDraftTickets = [];
+    let currentDraftCurrency = 'USD';
+    let ticketMessageTimeout = null;
 
     function renderEvents(list = filteredEvents) {
       const tbody = document.getElementById('eventsTableBody');
@@ -1025,6 +1220,7 @@
       }
 
       list.forEach(event => {
+        const totals = getEventTicketTotals(event);
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>
@@ -1037,12 +1233,13 @@
           </td>
           <td><div><i class="${getLocationIcon(event.locationType)}"></i> ${event.location}</div></td>
           <td>
-            <div>${event.ticketsSold} / ${event.capacity}</div>
+            <div>${totals.sold.toLocaleString()} / ${totals.inventory.toLocaleString()} tickets</div>
             <div style="width: 100px; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 4px;">
-              <div style="width: ${Math.min(100, getTicketProgress(event))}%; height: 100%; background: #4f46e5; border-radius: 2px;"></div>
+              <div style="width: ${Math.min(100, getTicketProgress(event, totals))}%; height: 100%; background: #4f46e5; border-radius: 2px;"></div>
             </div>
+            ${renderTicketSummary(event)}
           </td>
-          <td><strong>${formatGross(event)}</strong></td>
+          <td><strong>${formatGross(event, totals)}</strong></td>
           <td><i class="fas fa-eye"></i> ${event.views.toLocaleString()}</td>
           <td><span class="status-badge ${getStatusClass(event.status)}">${event.status}</span></td>
           <td>${event.type}</td>
@@ -1067,20 +1264,210 @@
       });
     }
 
-    function getTicketProgress(event) {
-      if (!event.capacity) return 0;
-      return (event.ticketsSold / event.capacity) * 100;
+    function startEventDraft() {
+      currentDraftTickets = [];
+      currentDraftCurrency = 'USD';
+      resetTicketFormInputs();
+      renderTicketList();
+      showTicketMessage('');
     }
 
-    function formatGross(event) {
-      if (event.price === 0 || event.gross === 0) {
+    function addTicketType() {
+      const nameInput = document.getElementById('ticketName');
+      const priceInput = document.getElementById('ticketPrice');
+      const inventoryInput = document.getElementById('ticketInventory');
+      const limitInput = document.getElementById('ticketLimit');
+      const startInput = document.getElementById('ticketStart');
+      const endInput = document.getElementById('ticketEnd');
+      const descriptionInput = document.getElementById('ticketDescription');
+
+      if (!nameInput || !priceInput || !inventoryInput || !limitInput || !startInput || !endInput || !descriptionInput) {
+        return;
+      }
+
+      const name = nameInput.value.trim();
+      if (!name) {
+        showTicketMessage('Please enter a ticket name.', true);
+        nameInput.focus();
+        return;
+      }
+
+      const priceValue = priceInput.value.trim();
+      const price = priceValue === '' ? 0 : Number(priceValue);
+      if (Number.isNaN(price) || price < 0) {
+        showTicketMessage('Price must be a number greater than or equal to zero.', true);
+        priceInput.focus();
+        return;
+      }
+
+      const inventoryValue = inventoryInput.value.trim();
+      const inventory = inventoryValue === '' ? 0 : Number(inventoryValue);
+      if (Number.isNaN(inventory) || inventory < 0) {
+        showTicketMessage('Inventory must be zero or greater.', true);
+        inventoryInput.focus();
+        return;
+      }
+
+      const limitValue = limitInput.value.trim();
+      let perOrderLimit = null;
+      if (limitValue !== '') {
+        const parsedLimit = Number(limitValue);
+        if (Number.isNaN(parsedLimit) || parsedLimit < 0) {
+          showTicketMessage('Per-order limit must be zero or greater.', true);
+          limitInput.focus();
+          return;
+        }
+        perOrderLimit = parsedLimit;
+      }
+
+      const ticket = {
+        id: `draft-${Date.now()}-${currentDraftTickets.length}`,
+        name,
+        price,
+        inventory,
+        perOrderLimit,
+        start: startInput.value || null,
+        end: endInput.value || null,
+        description: descriptionInput.value.trim(),
+        sold: 0
+      };
+
+      currentDraftTickets.push(ticket);
+      renderTicketList();
+      resetTicketFormInputs();
+      showTicketMessage(`Added ${name} ticket.`);
+    }
+
+    function renderTicketList() {
+      const listEl = document.getElementById('ticketList');
+      if (!listEl) return;
+
+      if (!currentDraftTickets.length) {
+        listEl.innerHTML = '<div class="ticket-card-empty">No ticket types added yet. Add your first ticket to set pricing and capacity.</div>';
+        return;
+      }
+
+      const currency = currentDraftCurrency;
+      listEl.innerHTML = currentDraftTickets
+        .map((ticket, index) => {
+          const priceLabel = Number(ticket.price) === 0
+            ? 'Free'
+            : formatCurrency(Number(ticket.price), currency);
+          const limitLabel = ticket.perOrderLimit === null || ticket.perOrderLimit === ''
+            ? 'No limit'
+            : `${ticket.perOrderLimit.toLocaleString()} per order`;
+          const scheduleParts = [];
+          const opensLabel = formatDateTimeLocal(ticket.start);
+          const closesLabel = formatDateTimeLocal(ticket.end);
+          if (opensLabel) scheduleParts.push(`Opens ${opensLabel}`);
+          if (closesLabel) scheduleParts.push(`Closes ${closesLabel}`);
+          const scheduleLabel = scheduleParts.join(' • ');
+
+          return `
+            <div class="ticket-card">
+              <div class="ticket-card-header">
+                <h4>${ticket.name}</h4>
+                <span class="ticket-price">${priceLabel}</span>
+              </div>
+              <div class="ticket-card-meta">
+                <span><i class="fas fa-cubes"></i> Inventory: ${Number(ticket.inventory).toLocaleString()}</span>
+                <span><i class="fas fa-user-check"></i> Limit: ${limitLabel}</span>
+                ${scheduleLabel ? `<span><i class="fas fa-clock"></i> ${scheduleLabel}</span>` : ''}
+              </div>
+              ${ticket.description ? `<div style="color:#4a5568;font-size:13px;">${ticket.description}</div>` : ''}
+              <div class="ticket-card-actions">
+                <button class="btn" type="button" onclick="removeTicketType(${index})">
+                  <i class="fas fa-trash"></i> Remove
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function removeTicketType(index) {
+      if (index < 0 || index >= currentDraftTickets.length) return;
+      const [removed] = currentDraftTickets.splice(index, 1);
+      renderTicketList();
+      showTicketMessage(removed ? `Removed ${removed.name} ticket.` : 'Ticket removed.');
+    }
+
+    function resetTicketFormInputs() {
+      const inputs = [
+        'ticketName',
+        'ticketPrice',
+        'ticketInventory',
+        'ticketLimit',
+        'ticketStart',
+        'ticketEnd',
+        'ticketDescription'
+      ];
+      inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'TEXTAREA') {
+          el.value = '';
+        } else {
+          el.value = '';
+        }
+      });
+    }
+
+    function showTicketMessage(message, isError = false) {
+      const messageEl = document.getElementById('ticketMessage');
+      if (!messageEl) return;
+      messageEl.textContent = message;
+      messageEl.classList.toggle('error', Boolean(isError));
+      if (ticketMessageTimeout) {
+        clearTimeout(ticketMessageTimeout);
+      }
+      if (message) {
+        ticketMessageTimeout = setTimeout(() => {
+          messageEl.textContent = '';
+          messageEl.classList.remove('error');
+        }, 4000);
+      }
+    }
+
+    function setupTicketForm() {
+      renderTicketList();
+      const addButton = document.getElementById('addTicketButton');
+      if (addButton) {
+        addButton.addEventListener('click', addTicketType);
+      }
+
+      ['ticketName', 'ticketPrice', 'ticketInventory', 'ticketLimit'].forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.addEventListener('keydown', event => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            addTicketType();
+          }
+        });
+      });
+    }
+
+    function getTicketProgress(event, totals = getEventTicketTotals(event)) {
+      if (!totals.inventory) return 0;
+      return (totals.sold / totals.inventory) * 100;
+    }
+
+    function formatGross(event, totals = getEventTicketTotals(event)) {
+      if (!totals.hasPaidTicket || totals.gross === 0) {
         return 'Free';
       }
-      return formatCurrency(event.gross);
+      return formatCurrency(totals.gross, getEventCurrency(event));
     }
 
-    function formatCurrency(amount) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
+    function formatCurrency(amount, currency = 'USD') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(amount);
     }
 
     function formatDate(dateStr) {
@@ -1091,6 +1478,19 @@
     function formatTime(dateStr, timeStr) {
       const dateTime = new Date(`${dateStr}T${timeStr}`);
       return dateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDateTimeLocal(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
 
     function getStatusClass(status) {
@@ -1128,9 +1528,10 @@
           if (new Date(event.date) > endDate) return false;
         }
 
+        const totals = getEventTicketTotals(event);
         const { min, max } = activeFilters.priceRange;
-        if (min !== null && event.gross < min) return false;
-        if (max !== null && event.gross > max) return false;
+        if (min !== null && totals.gross < min) return false;
+        if (max !== null && totals.gross > max) return false;
 
         return true;
       });
@@ -1620,6 +2021,7 @@
       createMethod = method;
       document.querySelectorAll('.create-option').forEach(elm => elm.classList.remove('selected'));
       if (el) el.classList.add('selected');
+      startEventDraft();
       setTimeout(() => {
         currentStep = 1;
         showStep(1);
@@ -1719,6 +2121,7 @@
       renderSavedPresets();
       updateActiveFiltersSummary();
       generateCalendarDays();
+      setupTicketForm();
 
       const modal = document.getElementById('createEventModal');
       if (modal) {
@@ -1728,7 +2131,7 @@
           }
         });
       }
-      
+
       wireVisibilityRadios();
       wireScheduleRadios();
     });
