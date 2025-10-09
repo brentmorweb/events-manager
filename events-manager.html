@@ -91,8 +91,6 @@
     .upload-area { border: 2px dashed #e2e8f0; border-radius: 8px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
     .upload-area:hover { border-color: #4f46e5; background: #f7fafc; }
     .upload-area i { font-size: 48px; color: #4f46e5; margin-bottom: 12px; }
-    .ai-polish-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; margin-top: 8px; }
-    .ai-polish-btn:hover { opacity: 0.9; }
     .tag-input { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 44px; align-items: center; }
     .tag { background: #eef2ff; color: #4f46e5; padding: 4px 12px; border-radius: 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
     .tag button { background: none; border: none; color: #4f46e5; cursor: pointer; padding: 0; line-height: 1; font-size: 14px; }
@@ -550,9 +548,7 @@
                 <p style="color:#718096;font-size:13px;margin-top:8px;">Drag and drop or click to browse</p>
                 <p style="color:#718096;font-size:12px;margin-top:4px;">Optimal: 1920x1080px for images, MP4 for video</p>
               </div>
-              <button class="ai-polish-btn" style="margin-top: 16px;">
-                <i class="fas fa-magic"></i> Generate Image with AI
-              </button>
+              <!-- AI-enhanced media tools will mount here when enableAiFeatures is true. -->
             </div>
           </div>
 
@@ -569,9 +565,7 @@
               <div class="form-group">
                 <label>Short Description <span style="color:#718096;font-weight:normal;">(0/200 characters)</span></label>
                 <textarea placeholder="Brief description of your event..."></textarea>
-                <button class="ai-polish-btn">
-                  <i class="fas fa-magic"></i> Polish with AI
-                </button>
+                <!-- Placeholder for AI-assisted copy edits when enableAiFeatures is enabled. -->
               </div>
             </div>
           </div>
@@ -729,9 +723,7 @@
               <div class="form-group">
                 <label>Event Description</label>
                 <textarea style="min-height: 200px;" placeholder="Provide detailed information about your event..."></textarea>
-                <button class="ai-polish-btn">
-                  <i class="fas fa-magic"></i> Polish with AI
-                </button>
+                <!-- Placeholder for AI-assisted long-form editing when enableAiFeatures is enabled. -->
               </div>
               <button class="btn" style="margin-top: 12px;">
                 <i class="fas fa-plus"></i> Add Paragraph
@@ -855,6 +847,9 @@
   </div>
 
   <script>
+    // Feature flag placeholder: switch to true when AI-powered assistance is ready.
+    const enableAiFeatures = false;
+
     const events = [
       {
         id: 1,
