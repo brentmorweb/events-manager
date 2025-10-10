@@ -25,8 +25,10 @@
     .search-box { position: relative; }
     .search-box input { padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 280px; }
     .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096; }
-    .quick-filters { display: flex; gap: 12px; align-items: center; }
-    .quick-filters select { width: 160px; }
+    .inline-filter-controls { display: flex; gap: 12px; align-items: flex-end; }
+    .inline-filter { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4a5568; }
+    .inline-filter label { font-weight: 600; }
+    .inline-filter select { width: 160px; font-size: 14px; }
     .events-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: none; }
     .events-table.active { display: block; }
     table { width: 100%; border-collapse: collapse; }
@@ -181,26 +183,33 @@
           <i class="fas fa-search"></i>
           <input id="eventSearch" type="text" placeholder="Search events..." aria-label="Search events" />
         </div>
-        <div class="quick-filters" aria-label="Quick filters">
-          <select id="statusQuickFilter" aria-label="Filter by status">
-            <option value="">All Statuses</option>
-            <option value="Published">Published</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Draft">Draft</option>
-            <option value="Completed">Completed</option>
-          </select>
-          <select id="typeQuickFilter" aria-label="Filter by type">
-            <option value="">All Types</option>
-            <option value="Conference">Conference</option>
-            <option value="Webinar">Webinar</option>
-            <option value="Training">Training</option>
-            <option value="Workshop">Workshop</option>
-            <option value="Seminar">Seminar</option>
-          </select>
+        <div class="inline-filter-controls" aria-label="Quick filters">
+          <div class="inline-filter">
+            <label for="statusInlineFilter">Status</label>
+            <select id="statusInlineFilter">
+              <option value="">All Statuses</option>
+              <option value="Published">Published</option>
+              <option value="Scheduled">Scheduled</option>
+              <option value="Draft">Draft</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="inline-filter">
+            <label for="typeInlineFilter">Type</label>
+            <select id="typeInlineFilter">
+              <option value="">All Types</option>
+              <option value="Conference">Conference</option>
+              <option value="Webinar">Webinar</option>
+              <option value="Training">Training</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Seminar">Seminar</option>
+            </select>
+          </div>
         </div>
         <button class="btn btn-primary" onclick="openCreateModal()">
           <i class="fas fa-plus"></i> Create Event
         </button>
+      </div>
     </div>
   </div>
 
@@ -1374,32 +1383,29 @@
       });
     }
 
-    function setupQuickFilters() {
-      const statusSelect = document.getElementById('statusQuickFilter');
-      if (statusSelect) {
-        statusSelect.addEventListener('change', (event) => {
-          activeFilters.status.clear();
-          const value = event.target.value;
-          if (value) {
-            activeFilters.status.add(value);
-          }
-          updateFilterControls();
-          applyFilters();
-        });
-      }
+    function setupInlineFilters() {
+      const selectConfigs = [
+        { id: 'statusInlineFilter', key: 'status' },
+        { id: 'typeInlineFilter', key: 'types' }
+      ];
 
-      const typeSelect = document.getElementById('typeQuickFilter');
-      if (typeSelect) {
-        typeSelect.addEventListener('change', (event) => {
-          activeFilters.types.clear();
-          const value = event.target.value;
+      selectConfigs.forEach(({ id, key }) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        select.addEventListener('change', (event) => {
+          const { value } = event.target;
+          const targetSet = activeFilters[key];
+          if (!targetSet) return;
+
+          targetSet.clear();
           if (value) {
-            activeFilters.types.add(value);
+            targetSet.add(value);
           }
           updateFilterControls();
           applyFilters();
         });
-      }
+      });
     }
 
     function resetFilters() {
@@ -1410,7 +1416,7 @@
     }
 
     function updateFilterControls() {
-      const statusSelect = document.getElementById('statusQuickFilter');
+      const statusSelect = document.getElementById('statusInlineFilter');
       if (statusSelect) {
         if (activeFilters.status.size === 1) {
           const [status] = Array.from(activeFilters.status);
@@ -1420,7 +1426,7 @@
         }
       }
 
-      const typeSelect = document.getElementById('typeQuickFilter');
+      const typeSelect = document.getElementById('typeInlineFilter');
       if (typeSelect) {
         if (activeFilters.types.size === 1) {
           const [type] = Array.from(activeFilters.types);
@@ -1774,7 +1780,7 @@
       filteredEvents = [...events];
       renderEvents(events);
       setupFilterControls();
-      setupQuickFilters();
+      setupInlineFilters();
       updateFilterControls();
       updateActiveFiltersSummary();
       generateCalendarDays();
