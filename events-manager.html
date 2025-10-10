@@ -223,11 +223,11 @@
     <!-- Calendar View -->
     <div id="calendarView" class="calendar-view" aria-live="polite">
       <div class="calendar-header">
-        <h2>October 2025</h2>
+        <h2 id="calendarTitle">October 2025</h2>
         <div class="calendar-nav">
-          <button class="btn"><i class="fas fa-chevron-left"></i> Previous</button>
-          <button class="btn">Today</button>
-          <button class="btn">Next <i class="fas fa-chevron-right"></i></button>
+          <button class="btn" id="prevMonthBtn"><i class="fas fa-chevron-left"></i> Previous</button>
+          <button class="btn" id="todayBtn">Today</button>
+          <button class="btn" id="nextMonthBtn">Next <i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
       <div class="calendar-grid">
@@ -1508,14 +1508,24 @@
       applyFilters();
     }
 
+    const today = new Date();
+    let currentMonth = 9; // October (0-indexed)
+    let currentYear = 2025;
+
     // Generate calendar days
     function generateCalendarDays() {
       const grid = document.getElementById('calendarDays');
       if (!grid) return;
 
       grid.innerHTML = '';
-      const calendarMonth = 9; // October (0-indexed)
-      const calendarYear = 2025;
+      const calendarMonth = currentMonth;
+      const calendarYear = currentYear;
+
+      const titleEl = document.getElementById('calendarTitle');
+      if (titleEl) {
+        const monthName = new Date(calendarYear, calendarMonth).toLocaleString('default', { month: 'long' });
+        titleEl.textContent = `${monthName} ${calendarYear}`;
+      }
       const eventsByDay = events.reduce((acc, event) => {
         const eventDate = new Date(event.date);
         if (eventDate.getMonth() !== calendarMonth || eventDate.getFullYear() !== calendarYear) {
@@ -1527,7 +1537,7 @@
         return acc;
       }, {});
 
-      const daysInMonth = 31;
+      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
       for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.className = 'calendar-day';
@@ -1545,6 +1555,43 @@
         grid.appendChild(day);
       }
     }
+
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    if (prevMonthBtn) {
+      prevMonthBtn.addEventListener('click', () => {
+        if (currentMonth === 0) {
+          currentMonth = 11;
+          currentYear -= 1;
+        } else {
+          currentMonth -= 1;
+        }
+        generateCalendarDays();
+      });
+    }
+
+    const todayBtn = document.getElementById('todayBtn');
+    if (todayBtn) {
+      todayBtn.addEventListener('click', () => {
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        generateCalendarDays();
+      });
+    }
+
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    if (nextMonthBtn) {
+      nextMonthBtn.addEventListener('click', () => {
+        if (currentMonth === 11) {
+          currentMonth = 0;
+          currentYear += 1;
+        } else {
+          currentMonth += 1;
+        }
+        generateCalendarDays();
+      });
+    }
+
+    generateCalendarDays();
 
     // View switcher (List <-> Calendar)
     function switchView(view, btn) {
