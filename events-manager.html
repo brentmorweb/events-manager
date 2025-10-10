@@ -147,7 +147,6 @@
     .active-filter-chip { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; border-radius: 999px; padding: 6px 12px; font-size: 13px; color: #4338ca; }
     .active-filter-chip button { border: none; background: none; cursor: pointer; color: #4338ca; padding: 0; font-size: 12px; }
     .active-filters .clear-all { margin-left: auto; }
-    .empty-filters { color: #a0aec0; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -1468,9 +1467,15 @@
       }
 
       if (!groups.length) {
-        summary.innerHTML = '<span class="empty-filters">No filters applied.</span>';
+        summary.style.display = 'none';
+        summary.style.marginBottom = '0';
+        summary.setAttribute('aria-hidden', 'true');
         return;
       }
+
+      summary.style.display = 'flex';
+      summary.style.marginBottom = '24px';
+      summary.removeAttribute('aria-hidden');
 
       const labelEl = document.createElement('span');
       labelEl.className = 'summary-label';
