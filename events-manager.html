@@ -40,8 +40,9 @@
     .status-published { background: #d1fae5; color: #065f46; }
     .status-scheduled { background: #dbeafe; color: #1e40af; }
     .status-draft { background: #f3f4f6; color: #4b5563; }
-    .actions-menu { display: flex; gap: 8px; justify-content: flex-end; }
-    .icon-btn { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer; transition: all 0.2s; }
+    .actions-menu { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+    .icon-btn { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #1a202c; }
+    .icon-btn i { color: #4a5568; }
     .icon-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
     .calendar-view { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: none; }
     .calendar-view.active { display: block; }
@@ -1098,17 +1099,21 @@
           <td>${event.type}</td>
           <td>
             <div class="actions-menu">
-              <button class="icon-btn" onclick="openEventDashboard(${event.id})" title="Open dashboard">
-                <i class="fas fa-chart-bar"></i>
+              <button class="icon-btn" onclick="openEventDashboard(${event.id})" aria-label="View event dashboard">
+                <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                <span>View</span>
               </button>
-              <button class="icon-btn" title="Edit">
-                <i class="fas fa-edit"></i>
+              <button class="icon-btn" aria-label="Edit event">
+                <i class="fas fa-edit" aria-hidden="true"></i>
+                <span>Edit</span>
               </button>
-              <button class="icon-btn" title="Duplicate">
-                <i class="fas fa-copy"></i>
+              <button class="icon-btn" aria-label="Duplicate event">
+                <i class="fas fa-copy" aria-hidden="true"></i>
+                <span>Duplicate</span>
               </button>
-              <button class="icon-btn" title="Delete">
-                <i class="fas fa-trash"></i>
+              <button class="icon-btn" aria-label="Delete event">
+                <i class="fas fa-trash" aria-hidden="true"></i>
+                <span>Delete</span>
               </button>
             </div>
           </td>
