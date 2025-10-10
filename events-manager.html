@@ -43,6 +43,13 @@
     .actions-menu { display: flex; gap: 8px; justify-content: flex-end; }
     .icon-btn { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer; transition: all 0.2s; }
     .icon-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
+    #listView th:nth-child(1), #listView td:nth-child(1) { width: 42%; }
+    #listView th:nth-child(2), #listView td:nth-child(2) { width: 26%; }
+    #listView th:nth-child(3), #listView td:nth-child(3) { width: 16%; white-space: nowrap; }
+    #listView th:nth-child(4), #listView td:nth-child(4) { width: 16%; text-align: right; }
+    #listView td:nth-child(4) { white-space: nowrap; }
+    .primary-action-cell { text-align: right; }
+    .primary-action-btn { padding: 8px 16px; font-size: 13px; }
     .calendar-view { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: none; }
     .calendar-view.active { display: block; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -207,13 +214,8 @@
           <tr>
             <th>Event</th>
             <th>Date & Time</th>
-            <th>Location</th>
-            <th>Tickets</th>
-            <th>Gross</th>
-            <th>Views</th>
             <th>Status</th>
-            <th>Type</th>
-            <th style="text-align: right;">Actions</th>
+            <th>Primary Action</th>
           </tr>
         </thead>
         <tbody id="eventsTableBody"></tbody>
@@ -1063,7 +1065,7 @@
       if (!list.length) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
-        cell.colSpan = 9;
+        cell.colSpan = 4;
         cell.style.textAlign = 'center';
         cell.style.padding = '40px 16px';
         cell.innerHTML = '<div style="color:#718096;">No events match your current filters. Adjust the filters above to see more results.</div>';
@@ -1073,7 +1075,6 @@
       }
 
       list.forEach(event => {
-        const totals = getEventTicketTotals(event);
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>
@@ -1084,33 +1085,11 @@
             <div>${formatDate(event.date)}</div>
             <div style="color: #718096; font-size: 13px;">${formatTime(event.date, event.time)}</div>
           </td>
-          <td><div><i class="${getLocationIcon(event.locationType)}"></i> ${event.location}</div></td>
-          <td>
-            <div>${totals.sold.toLocaleString()} / ${totals.inventory.toLocaleString()} tickets</div>
-            <div style="width: 100px; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 4px;">
-              <div style="width: ${Math.min(100, getTicketProgress(event, totals))}%; height: 100%; background: #4f46e5; border-radius: 2px;"></div>
-            </div>
-            ${renderTicketSummary(event)}
-          </td>
-          <td><strong>${formatGross(event, totals)}</strong></td>
-          <td><i class="fas fa-eye"></i> ${event.views.toLocaleString()}</td>
           <td><span class="status-badge ${getStatusClass(event.status)}">${event.status}</span></td>
-          <td>${event.type}</td>
-          <td>
-            <div class="actions-menu">
-              <button class="icon-btn" onclick="openEventDashboard(${event.id})" title="Open dashboard">
-                <i class="fas fa-chart-bar"></i>
-              </button>
-              <button class="icon-btn" title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="icon-btn" title="Duplicate">
-                <i class="fas fa-copy"></i>
-              </button>
-              <button class="icon-btn" title="Delete">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
+          <td class="primary-action-cell">
+            <button class="btn btn-primary primary-action-btn" onclick="openEventDashboard(${event.id})" title="Open dashboard">
+              <i class="fas fa-chart-bar"></i> View Dashboard
+            </button>
           </td>
         `;
         tbody.appendChild(row);
