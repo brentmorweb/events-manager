@@ -854,9 +854,15 @@
   </div>
 
   <script>
+    // Top-level client-side controller for the Events dashboard. Everything below keeps
+    // the mock data, list view, calendar view, and creation modal in sync without any
+    // backend calls.
+
     // Feature flag placeholder: flip to true when reinstating AI polish helpers in the UI.
     const enableAiFeatures = false;
 
+    // Static mock data that drives both the list and calendar views. In a real app these
+    // would be fetched from an API but here we keep them in-memory for demo purposes.
     const events = [
       {
         id: 1,
@@ -982,13 +988,21 @@
       }
     ];
 
+    // Working copies of the event list and search text so filters don't mutate the
+    // original dataset.
     let filteredEvents = [...events];
     let searchQuery = '';
 
+    // ---------- Data formatting helpers ----------
+
+    // Safely extract the currency for an event, defaulting to USD if the record is
+    // incomplete.
     function getEventCurrency(event) {
       return event && event.currency ? event.currency : 'USD';
     }
 
+    // Aggregate ticket totals (sold, inventory, revenue) so the UI can render quick
+    // summaries without repeating this math in multiple places.
     function getEventTicketTotals(event) {
       if (!event || !Array.isArray(event.tickets)) {
         return { sold: 0, inventory: 0, gross: 0, hasPaidTicket: false };
@@ -1010,6 +1024,7 @@
       );
     }
 
+    // Build the pill-style list of ticket types for the table view.
     function renderTicketSummary(event) {
       if (!event || !Array.isArray(event.tickets) || !event.tickets.length) {
         return '<div class="ticket-breakdown empty">No ticket types configured yet.</div>';
@@ -1038,11 +1053,13 @@
       return `<div class="ticket-breakdown">${items}</div>`;
     }
 
+    // Track which filters are active using Sets so we can toggle individual chips.
     const activeFilters = {
       status: new Set(),
       types: new Set()
     };
 
+    // Utility to avoid over-updating the UI while typing.
     function debounce(fn, delay = 200) {
       let timeoutId;
       return (...args) => {
@@ -1055,13 +1072,14 @@
       };
     }
 
-    // State
+    // ---------- Creation wizard + ticket state ----------
     let currentStep = 0;
     let createMethod = null;
     let currentDraftTickets = [];
     let currentDraftCurrency = 'USD';
     let ticketMessageTimeout = null;
 
+    // Render the events table based on the current filtered list.
     function renderEvents(list = filteredEvents) {
       const tbody = document.getElementById('eventsTableBody');
       if (!tbody) return;
@@ -1175,6 +1193,7 @@
       showTicketMessage(`Added ${name} ticket.`);
     }
 
+    // Render the draft ticket cards inside the creation modal.
     function renderTicketList() {
       const listEl = document.getElementById('ticketList');
       if (!listEl) return;
@@ -1251,6 +1270,7 @@
       });
     }
 
+    // Flash a temporary banner in the ticket builder for validation and success messages.
     function showTicketMessage(message, isError = false) {
       const messageEl = document.getElementById('ticketMessage');
       if (!messageEl) return;
@@ -1267,6 +1287,7 @@
       }
     }
 
+    // Wire up click/Enter handlers for the ticket builder form.
     function setupTicketForm() {
       renderTicketList();
       const addButton = document.getElementById('addTicketButton');
@@ -1286,11 +1307,14 @@
       });
     }
 
+    // Convert ticket sales into a percentage for progress bars.
     function getTicketProgress(event, totals = getEventTicketTotals(event)) {
       if (!totals.inventory) return 0;
       return (totals.sold / totals.inventory) * 100;
     }
 
+    // Calculate total revenue for an event and format it; falls back to "Free" when
+    // there are no paid tickets.
     function formatGross(event, totals = getEventTicketTotals(event)) {
       if (!totals.hasPaidTicket || totals.gross === 0) {
         return 'Free';
@@ -1298,6 +1322,7 @@
       return formatCurrency(totals.gross, getEventCurrency(event));
     }
 
+    // Currency/date/time formatters shared across the dashboard.
     function formatCurrency(amount, currency = 'USD') {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -1349,6 +1374,7 @@
       return 'fas fa-map-marker-alt';
     }
 
+    // Apply text + chip filters to the events array and re-render the table + summary.
     function applyFilters() {
       const query = searchQuery.trim().toLowerCase();
       const results = events.filter(event => {
@@ -1518,7 +1544,8 @@
     let currentMonth = 9; // October (0-indexed)
     let currentYear = 2025;
 
-    // Generate calendar days
+    // ---------- Calendar controls ----------
+    // Generate the month grid and populate events for each day.
     function generateCalendarDays() {
       const grid = document.getElementById('calendarDays');
       if (!grid) return;
@@ -1599,7 +1626,8 @@
 
     generateCalendarDays();
 
-    // View switcher (List <-> Calendar)
+    // ---------- View and tab toggles ----------
+    // Switch between the list table and calendar grid, keeping the active button state in sync.
     function switchView(view, btn) {
       const list = document.getElementById('listView');
       const cal = document.getElementById('calendarView');
@@ -1624,7 +1652,7 @@
       }
     }
 
-    // Dashboard tab switcher
+    // Dashboard tab switcher for the event details section.
     function switchDashboardTab(tab, el) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       if (el) el.classList.add('active');
@@ -1657,7 +1685,7 @@
       });
     }
 
-    // Schedule publish toggle
+    // Schedule publish toggle for the creation modal.
     function wireScheduleRadios() {
       const radios = document.querySelectorAll('input[name="schedule"]');
       radios.forEach(radio => {
@@ -1670,6 +1698,7 @@
       });
     }
 
+    // ---------- Creation modal controls ----------
     // Modal open/close
     function openCreateModal() {
       const modal = document.getElementById('createEventModal');
@@ -1762,7 +1791,7 @@
       }
     }
 
-    // Collapsible sections
+    // Collapsible sections inside the creation wizard.
     function toggleSection(sectionId) {
       const content = document.getElementById('section-' + sectionId);
       if (!content) {
@@ -1778,7 +1807,7 @@
       content.classList.toggle('expanded');
     }
 
-    // Event dashboard open/close
+    // Event dashboard open/close (simple single-event demo state toggle).
     function openEventDashboard(eventId) {
       document.getElementById('listView').classList.remove('active');
       document.getElementById('calendarView').classList.remove('active');
@@ -1791,7 +1820,8 @@
       document.getElementById('calendarView').classList.remove('active');
     }
 
-    // Initialize on load
+    // Initialize the page once the DOM is ready by seeding data, wiring filters, and
+    // attaching modal helpers.
     document.addEventListener('DOMContentLoaded', () => {
       filteredEvents = [...events];
       renderEvents(events);
